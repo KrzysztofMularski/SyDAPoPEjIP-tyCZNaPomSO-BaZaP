@@ -1,5 +1,5 @@
 {
-  "name": "sydapopejip-tycznapomsoz-bazap",
+  "name": "sydapopejip-tycznapomso-bazap",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSOZ-BaZaP.git"
+    "url": "git+https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSOZ-BaZaP/issues"
+    "url": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP/issues"
   },
-  "homepage": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSOZ-BaZaP#readme",
+  "homepage": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP#readme",
   "dependencies": {
     "express": "^4.18.2",
     "nodemon": "^2.0.20"
