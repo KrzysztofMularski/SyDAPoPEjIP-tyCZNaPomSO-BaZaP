@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "css-watch": "npx tailwindcss -i ./styles.css -o ./public/styles.css --watch"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,10 @@
   "homepage": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "systeminformation": "^5.16.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.2.4"
   }
 }
