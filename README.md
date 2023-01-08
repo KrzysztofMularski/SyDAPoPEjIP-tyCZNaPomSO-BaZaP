@@ -4,12 +4,24 @@
 
 ## Setup:
 
-Aby generować automatycznie plik css po zmianach:
+```
+git clone https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP
+
+cd ./SyDAPoPEjIP-tyCZNaPomSO-BaZaP
+
+npm run setup
+
+npm run dev
+```
+
+Aby generować automatycznie plik css po zmianach (najlepiej odpalić sobie w osobnym terminalu):
+
 ```
 npm run css-watch
 ```
 
-Aby uruchomić przez `nodemon`:
+Aby zbudować .exe albo inne executables (będą w katalogu `/dist`):
+
 ```
-npm start
+npm run build
 ```

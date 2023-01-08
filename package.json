@@ -1,27 +1,32 @@
 {
   "name": "sydapopejip-tycznapomso-bazap",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "SyDAPoPEjIP-tyCZNaPomSO-BaZaP",
+  "main": "main.js",
+  "productName": "SyDAPoPEjIP-tyCZNaPomSO-BaZaP",
+  "bin": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "css-watch": "npx tailwindcss -i ./styles.css -o ./public/styles.css --watch"
+    "setup": "npm i && npx neu update && npm run css-build",
+    "dev": "npx neu run",
+    "css-build": "npx tailwindcss -i ./resources/styles.css -o ./resources/out/styles.css",
+    "css-watch": "npx tailwindcss -i ./resources/styles.css -o ./resources/out/styles.css --watch",
+    "build": "npx neu build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "GTI",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP/issues"
   },
   "homepage": "https://github.com/KrzysztofMularski/SyDAPoPEjIP-tyCZNaPomSO-BaZaP#readme",
   "dependencies": {
+    "@neutralinojs/neu": "^9.3.1",
     "express": "^4.18.2",
-    "nodemon": "^2.0.20",
-    "systeminformation": "^5.16.1"
+    "nodemon": "^2.0.20"
   },
   "devDependencies": {
     "tailwindcss": "^3.2.4"

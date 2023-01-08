@@ -3,3 +3,11 @@ package-lock.json
 .vscode
 .DS_Store
 public
+*.exe
+out/
+.tmp
+neutralinojs.log
+bin
+resources
+.prettierrc
+dist
