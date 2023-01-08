@@ -8,6 +8,6 @@ out/
 .tmp
 neutralinojs.log
 bin
-resources
+resources/js/neutralino.js
 .prettierrc
 dist

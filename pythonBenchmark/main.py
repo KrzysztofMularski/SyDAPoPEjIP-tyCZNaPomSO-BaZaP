@@ -30,7 +30,7 @@ def main():
     # find elapsed time in seconds
     ms = (end-start) * 10**6
     print(f"Elapsed {ms:.03f} micro secs.")
-    with open("CDbenchmark.txt", "a") as myfile:
+    with open(cwd+"\CDbenchmark.txt", "a") as myfile:
         myfile.write(str(ms))
         myfile.write("\n")
 
