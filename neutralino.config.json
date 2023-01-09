@@ -13,7 +13,7 @@
     "enabled": true,
     "writeToLogFile": true
   },
-  "nativeAllowList": ["app.*", "os.*", "debug.log"],
+  "nativeAllowList": ["app.*", "os.*", "filesystem.*", "debug.log"],
   "globalVariables": {
     "TEST1": "Hello",
     "TEST2": [2, 4, 5],
@@ -25,8 +25,8 @@
   "modes": {
     "window": {
       "title": "neu_app",
-      "width": 800,
-      "height": 600,
+      "width": 1200,
+      "height": 800,
       "minWidth": 400,
       "minHeight": 200,
       "fullScreen": false,

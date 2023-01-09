@@ -11,3 +11,4 @@ bin
 resources/js/neutralino.js
 .prettierrc
 dist
+.env-local
