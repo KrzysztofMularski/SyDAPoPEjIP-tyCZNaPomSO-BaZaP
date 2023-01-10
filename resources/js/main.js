@@ -69,7 +69,7 @@ let pomiarId;
 
 async function enterPomiarsLoop() {
     insertRecord(1222);
-    return;
+    // return;
     const liczba_iteracji = 1;
     for (let i = 0; i < liczba_iteracji; i++) {
         const pomiar = await Neutralino.os.spawnProcess(
@@ -77,6 +77,7 @@ async function enterPomiarsLoop() {
         );
         pomiarId = pomiar.id;
     }
+    return;
 }
 
 function onPomiar() {
