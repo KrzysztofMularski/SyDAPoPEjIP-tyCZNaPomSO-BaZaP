@@ -45,10 +45,12 @@ const getAllRecords = async () => {
     }
 };
 
-const insertRecord = async (time) => {
+const insertRecord = async (time,seriaId,date) => {
+    time = parseFloat(time);
     const body = {
         measured_time: time,
-        date: new Date(),
+        date,
+        seriaId,
     };
     const options = {
         method: "POST",
@@ -66,20 +68,30 @@ const insertRecord = async (time) => {
 };
 
 let pomiarId;
-
+let seriaId;
 async function enterPomiarsLoop() {
-    insertRecord(1222);
-    // return;
-    const liczba_iteracji = 1;
+    const liczba_iteracji = 10;
+    seriaId =Date.now();
     for (let i = 0; i < liczba_iteracji; i++) {
+        
         const pomiar = await Neutralino.os.spawnProcess(
             "cd pythonBenchmark && python ./main.py"
         );
         pomiarId = pomiar.id;
+        await sleep(10000);
     }
     return;
 }
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve,ms));
+}
 
+async function ogarnijWynikiPomiaru(czas){
+    let dataPom = Date.now();
+    let toSave = `${seriaId};${czas};${dataPom}\n`;
+    await Neutralino.filesystem.appendFile('./pythonBenchmark/CDbenchmark.txt', toSave);
+    await insertRecord(czas,seriaId,dataPom);
+}
 function onPomiar() {
     enterPomiarsLoop();
 }
@@ -111,7 +123,12 @@ Neutralino.events.on("spawnedProcess", (evt) => {
     if (pomiarId == evt.detail.id) {
         switch (evt.detail.action) {
             case "stdOut":
-                console.log(evt.detail.data);
+                let log = evt.detail.data;
+                log =log.replace("\n","");
+                log =log.replace("\r","");
+                log =log.replace(" ","");
+                ogarnijWynikiPomiaru(log);
+                console.log(log);
                 break;
             case "stdErr":
                 console.error(evt.detail.data);
@@ -122,3 +139,4 @@ Neutralino.events.on("spawnedProcess", (evt) => {
         }
     }
 });
+

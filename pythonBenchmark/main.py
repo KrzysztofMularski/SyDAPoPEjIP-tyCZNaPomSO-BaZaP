@@ -29,17 +29,11 @@ def main():
     end = time.perf_counter()
     # find elapsed time in seconds
     ms = (end-start) * 10**6
-    print(f"Elapsed {ms:.03f} micro secs.")
-    with open(cwd+"\CDbenchmark.txt", "a") as myfile:
-        myfile.write(str(ms))
-        myfile.write("\n")
-
-    # print('--- stdout --')
-    #     # print(p.stdout)
-    return 0
+    print(ms)
+    return ms
 
 
 
 if __name__ == "__main__":
-    main()
-    sys.exit(1)
+    ms2 = main()
+    sys.exit()
