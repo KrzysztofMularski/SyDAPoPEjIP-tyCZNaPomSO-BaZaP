@@ -75,12 +75,13 @@ const getAllRecords = async () => {
   }
 };
 
-const insertRecord = async (time, seriaId, date) => {
+const insertRecord = async (time, seriaId, date,driveType) => {
   time = parseFloat(time);
   const body = {
     measured_time: time,
     date,
     seriaId,
+    driveType,
   };
   const options = {
     method: "POST",
@@ -102,6 +103,7 @@ let seriaId;
 async function enterPomiarsLoop() {
   const liczba_iteracji = 10;
   seriaId = Date.now();
+  
   for (let i = 0; i < liczba_iteracji; i++) {
     const pomiar = await Neutralino.os.spawnProcess(
       "cd pythonBenchmark && python ./main.py"
@@ -117,12 +119,14 @@ function sleep(ms) {
 
 async function ogarnijWynikiPomiaru(czas) {
   let dataPom = Date.now();
-  let toSave = `${seriaId};${czas};${dataPom}\n`;
+  typDysku =await Neutralino.filesystem.readFile('./pythonBenchmark/CurrentDrive.txt', {});
+  typDysku=typDysku.trim();
+  let toSave = `${czas};${seriaId};${dataPom};${typDysku}\n`;
   await Neutralino.filesystem.appendFile(
     "./pythonBenchmark/CDbenchmark.txt",
     toSave
   );
-  await insertRecord(czas, seriaId, dataPom);
+  await insertRecord(czas, seriaId, dataPom,typDysku);
 }
 function onPomiar() {
   enterPomiarsLoop();

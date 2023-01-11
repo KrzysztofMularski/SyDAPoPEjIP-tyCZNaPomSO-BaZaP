@@ -1,0 +1,1 @@
+(Get-PnpDevice -Class 'CDROM' -PresentOnly).FriendlyName

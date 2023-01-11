@@ -4,7 +4,18 @@ import time
 
 def main():
     cwd = os.getcwd()
-
+    tekstTestu = cwd+"\whatDrive.ps1"
+    p0 = subprocess.run(
+        ["powershell.exe", 
+        "-NoProfile", 
+        "-ExecutionPolicy", "Bypass", 
+        "-File",tekstTestu ], 
+        capture_output=True, text=True
+        )
+    pom =p0.stdout
+    # print(p0.stdout)
+    with open("CurrentDrive.txt","w") as myfile:
+        myfile.write(str(pom))
     tekstRozkazu = cwd + "\CD_Open.ps1"
     tekstRozkazu2 = cwd + "\CD_Close.ps1"
     #start measuring time
