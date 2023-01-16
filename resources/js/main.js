@@ -133,15 +133,15 @@ function sleep(ms) {
 }
 
 const getCdDriveType = async () => {
-  // let typDysku = await Neutralino.filesystem.readFile(
-  //   "./pythonBenchmark/CurrentDrive.txt",
-  //   {}
-  // );
-  // typDysku = typDysku.trim();
-  //
-  // return typDysku;
+  let typDysku = await Neutralino.filesystem.readFile(
+    "./pythonBenchmark/CurrentDrive.txt",
+    {}
+  );
+  typDysku = typDysku.trim();
+
+  return typDysku;
   // return "TSSTcorp CDDVDW SH-216DB";
-  return "nie ma takiego";
+  // return "nie ma takiego";
 };
 
 async function ogarnijWynikiPomiaru(czas) {
