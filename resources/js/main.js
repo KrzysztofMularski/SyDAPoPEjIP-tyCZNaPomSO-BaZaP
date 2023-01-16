@@ -2,7 +2,11 @@ function onWindowClose() {
   Neutralino.app.exit();
 }
 
-const envs = {};
+const envs = {
+  XATA_API_KEY: "xau_R8NvUEAUsm0NfkXEoeg1Wgrap9aSg1fw0",
+  DB_URL:
+    "https://krzysztof-mularski-s-workspace-1ou6nq.us-east-1.xata.sh/db/bazap:main/tables/measurements",
+};
 
 const setEnvVars = async () => {
   const content = await Neutralino.filesystem.readFile(
@@ -14,11 +18,13 @@ const setEnvVars = async () => {
   });
 };
 
-const fetchAllRecords = async () => {
+const fetchAllRecords = async (size, sort, filter) => {
   const body = {
     page: {
-      size: 15,
+      size: size,
     },
+    sort: sort,
+    filter: filter,
   };
   const options = {
     method: "POST",
@@ -30,14 +36,20 @@ const fetchAllRecords = async () => {
   };
 
   try {
+    console.log(options);
     let response = await fetch(`${envs.DB_URL}/query`, options);
     response = await response.json();
     let arr = response.records;
 
-    arr = arr.map(({ measured_time, date }, id) => {
-      return { id: id, measuredTime: measured_time, date: date };
+    arr = arr.map(({ id, measured_time, date, driveType }) => {
+      return {
+        id: id,
+        measuredTime: measured_time,
+        date: date,
+        driveType: driveType,
+      };
     });
-    return arr;
+    return arr.reverse();
   } catch (err) {
     console.log(err);
   }
@@ -49,6 +61,9 @@ const getAllRecords = async () => {
   const body = {
     page: {
       size: 15,
+    },
+    sort: {
+      date: "desc",
     },
   };
   const options = {
@@ -75,7 +90,7 @@ const getAllRecords = async () => {
   }
 };
 
-const insertRecord = async (time, seriaId, date,driveType) => {
+const insertRecord = async (time, seriaId, date, driveType) => {
   time = parseFloat(time);
   const body = {
     measured_time: time,
@@ -103,7 +118,7 @@ let seriaId;
 async function enterPomiarsLoop() {
   const liczba_iteracji = 10;
   seriaId = Date.now();
-  
+
   for (let i = 0; i < liczba_iteracji; i++) {
     const pomiar = await Neutralino.os.spawnProcess(
       "cd pythonBenchmark && python ./main.py"
@@ -117,16 +132,27 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const getCdDriveType = async () => {
+  // let typDysku = await Neutralino.filesystem.readFile(
+  //   "./pythonBenchmark/CurrentDrive.txt",
+  //   {}
+  // );
+  // typDysku = typDysku.trim();
+  //
+  // return typDysku;
+  // return "TSSTcorp CDDVDW SH-216DB";
+  return "nie ma takiego";
+};
+
 async function ogarnijWynikiPomiaru(czas) {
   let dataPom = Date.now();
-  typDysku =await Neutralino.filesystem.readFile('./pythonBenchmark/CurrentDrive.txt', {});
-  typDysku=typDysku.trim();
+  let typDysku = await getCdDriveType();
   let toSave = `${czas};${seriaId};${dataPom};${typDysku}\n`;
   await Neutralino.filesystem.appendFile(
     "./pythonBenchmark/CDbenchmark.txt",
     toSave
   );
-  await insertRecord(czas, seriaId, dataPom,typDysku);
+  await insertRecord(czas, seriaId, dataPom, typDysku);
 }
 function onPomiar() {
   enterPomiarsLoop();

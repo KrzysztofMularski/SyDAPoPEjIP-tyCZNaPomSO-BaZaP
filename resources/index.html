@@ -22,25 +22,92 @@
     <script src="js/main.js" defer></script>
 
     <script>
-      const generateWykres = async () => {
+      let linearChart;
+      let barChart;
+      const generateLinearChart = async () => {
         const speedCanvas = document.getElementById("speedChart");
+        if (linearChart !== undefined) linearChart.destroy();
+        speedCanvas.hidden = false;
 
-        let pomiarData = await fetchAllRecords();
+        let pomiarData = await fetchAllRecords(15, { date: "desc" }, {});
         console.log(pomiarData);
         let chartData = {
-          labels: pomiarData.map((pomiar) =>
-            new Date(pomiar.date).toLocaleString()
-          ),
+          labels: pomiarData.map((pomiar) => [
+            new Date(pomiar.date).toLocaleString(),
+            pomiar.driveType,
+          ]),
           datasets: [
             {
-              label: "Prędkość wysuwania i wsuwania (mikrosekundy)",
+              label: "Czas wysuwania i wsuwania (mikrosekundy)",
               data: pomiarData.map((pomiar) => pomiar.measuredTime),
               borderColor: "rgba(9, 169, 26, 0.8)",
             },
           ],
         };
-        new Chart(speedCanvas, {
+        linearChart = new Chart(speedCanvas, {
           type: "line",
+          data: chartData,
+        });
+      };
+      const generateBarChart = async () => {
+        const speedCanvas = document.getElementById("speedChart2");
+        console.log(barChart);
+        if (barChart !== undefined) {
+          console.log("usuwam");
+          barChart.destroy();
+        }
+        speedCanvas.hidden = false;
+
+        let lastMyPomiar = await fetchAllRecords(
+          1,
+          { date: "desc" },
+          { driveType: await getCdDriveType() }
+        );
+
+        let myPomiarId =
+          lastMyPomiar[0] !== undefined ? lastMyPomiar[0].id : "0";
+        console.log(myPomiarId);
+
+        let topFive = await fetchAllRecords(
+          5,
+          { measured_time: "desc" },
+          { $not: { id: myPomiarId } }
+        );
+        let bottomFive = await fetchAllRecords(
+          5,
+          { measured_time: "asc" },
+          { $not: { id: myPomiarId } }
+        );
+
+        let dataset = [].concat(bottomFive, lastMyPomiar, topFive);
+        dataset.sort((a, b) => b.measuredTime - a.measuredTime);
+
+        console.log(dataset);
+
+        let chartData = {
+          labels: dataset.map((pomiar) => [
+            new Date(pomiar.date).toLocaleString(),
+            pomiar.driveType,
+          ]),
+          datasets: [
+            {
+              label: "Czas wysuwania i wsuwania (mikrosekundy)",
+              data: dataset.map((pomiar) => pomiar.measuredTime),
+              backgroundColor: dataset.map((pomiar) =>
+                pomiar.id === myPomiarId
+                  ? "rgba(9, 169, 26, 0.8)"
+                  : "rgba(227, 31, 73, 1)"
+              ),
+              borderColor: dataset.map((pomiar) =>
+                pomiar.id === myPomiarId
+                  ? "rgba(9, 169, 26, 0.8)"
+                  : "rgba(227, 31, 73, 1)"
+              ),
+            },
+          ],
+        };
+        barChart = new Chart(speedCanvas, {
+          type: "bar",
           data: chartData,
         });
       };
@@ -64,16 +131,23 @@
         onclick="getAllRecords()"
         class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
       >
-        Wszystkie pomiary
+        All pomiary
       </button>
       <button
-        onclick="generateWykres()"
+        onclick="generateLinearChart()"
         class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
       >
-        Pokaż wykres
+        Show wykres liniowy
+      </button>
+      <button
+        onclick="generateBarChart()"
+        class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+      >
+        Show wykres slupkowy
       </button>
       <div id="pomiary" class="crt text-green-500"></div>
-      <canvas id="speedChart" class="crt w-full h-full"></canvas>
+      <canvas id="speedChart" class="crt w-full h-full hidden"></canvas>
+      <canvas id="speedChart2" class="crt w-full h-full hidden"></canvas>
     </div>
   </body>
 </html>
