@@ -1,79 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-    <link href="./out/styles.css" rel="stylesheet" />
-    <title>Document</title>
-    <!-- Neutralino.js client. This file is gitignored, 
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+            rel="stylesheet"
+        />
+        <link href="./out/styles.css" rel="stylesheet" />
+        <title>Document</title>
+        <!-- Neutralino.js client. This file is gitignored, 
         because `neu update` typically downloads it.
         Avoid copy-pasting it. 
         -->
-    <script src="js/neutralino.js" defer></script>
-    <!-- Your app's source files -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="js/main.js" defer></script>
+        <script src="js/neutralino.js" defer></script>
+        <!-- Your app's source files -->
+        <link
+            rel="shortcut icon"
+            href="icons/appIcon.png"
+            type="image/x-icon"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+        <script src="js/main.js" defer></script>
 
-    <script>
-      const generateWykres = async () => {
-        const speedCanvas = document.getElementById("speedChart");
+        <script>
+            const generateWykres = async () => {
+                const speedCanvas = document.getElementById("speedChart");
 
-        let pomiarData = await fetchAllRecords();
-        console.log(pomiarData);
-        let chartData = {
-          labels: pomiarData.map((pomiar) =>
-            new Date(pomiar.date).toLocaleString()
-          ),
-          datasets: [
-            {
-              label: "Prędkość wysuwania i wsuwania (mikrosekundy)",
-              data: pomiarData.map((pomiar) => pomiar.measuredTime),
-              borderColor: "rgba(9, 169, 26, 0.8)",
-            },
-          ],
-        };
-        new Chart(speedCanvas, {
-          type: "line",
-          data: chartData,
-        });
-      };
-    </script>
-  </head>
-  <body class="crt bg-black font-ps2p py-2">
-    <div
-      id="intro-container"
-      class="crt text-green-500 whitespace-nowrap overflow-hidden"
-    >
-      <p class="w-min" id="intro">Welkom to SyDAPoPEjIP-tyCZNaPomSO-BaZaP</p>
-    </div>
-    <div class="crt px-4 flex flex-col gap-2">
-      <button
-        onclick="onPomiar()"
-        class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
-      >
-        Make pomiar
-      </button>
-      <button
-        onclick="getAllRecords()"
-        class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
-      >
-        Wszystkie pomiary
-      </button>
-      <button
-        onclick="generateWykres()"
-        class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
-      >
-        Pokaż wykres
-      </button>
-      <div id="pomiary" class="crt text-green-500"></div>
-      <canvas id="speedChart" class="crt w-full h-full"></canvas>
-    </div>
-  </body>
+                let pomiarData = await fetchAllRecords();
+                console.log(pomiarData);
+                let chartData = {
+                    labels: pomiarData.map((pomiar) =>
+                        new Date(pomiar.date).toLocaleString()
+                    ),
+                    datasets: [
+                        {
+                            label: "Predkość wysuwania i wsuwania (mikrosekundy)",
+                            data: pomiarData.map(
+                                (pomiar) => pomiar.measuredTime
+                            ),
+                            borderColor: "rgba(9, 169, 26, 0.8)",
+                        },
+                    ],
+                };
+                new Chart(speedCanvas, {
+                    type: "line",
+                    data: chartData,
+                    options: {
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        family: "'Press Start 2P', cursive",
+                                    },
+                                },
+                            },
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    font: {
+                                        size: 10,
+                                        family: "'Press Start 2P', cursive",
+                                    },
+                                },
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 10,
+                                        family: "'Press Start 2P', cursive",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+            };
+        </script>
+    </head>
+    <body class="bg-black font-ps2p relative c">
+        <div
+            id="intro-container"
+            class="text-green-500 whitespace-nowrap overflow-hidden pt-2"
+        >
+            <p class="w-min" id="introa">
+                Welkom to SyDAPoPEjIP-tyCZNaPomSO-BaZaP
+            </p>
+        </div>
+
+        <div class="px-4 flex flex-col gap-2 items-center crt">
+            <button
+                onclick="onPomiar()"
+                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+            >
+                Make pomiar
+            </button>
+            <button
+                onclick="getAllRecords()"
+                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+            >
+                Wszystkie pomiary
+            </button>
+            <button
+                onclick="generateWykres()"
+                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+            >
+                Pokaż wykres
+            </button>
+            <div id="pomiary" class="text-green-500"></div>
+            <canvas id="speedChart" class="w-1/2 max-w-xl max-h-64"></canvas>
+        </div>
+    </body>
 </html>
