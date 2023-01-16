@@ -27,18 +27,27 @@
         <script src="js/main.js" defer></script>
 
         <script>
-            const generateWykres = async () => {
+            let linearChart;
+            let barChart;
+            const generateLinearChart = async () => {
                 const speedCanvas = document.getElementById("speedChart");
+                if (linearChart !== undefined) linearChart.destroy();
+                speedCanvas.hidden = false;
 
-                let pomiarData = await fetchAllRecords();
+                let pomiarData = await fetchAllRecords(
+                    15,
+                    { date: "desc" },
+                    {}
+                );
                 console.log(pomiarData);
                 let chartData = {
-                    labels: pomiarData.map((pomiar) =>
-                        new Date(pomiar.date).toLocaleString()
-                    ),
+                    labels: pomiarData.map((pomiar) => [
+                        new Date(pomiar.date).toLocaleString(),
+                        pomiar.driveType,
+                    ]),
                     datasets: [
                         {
-                            label: "Predkość wysuwania i wsuwania (mikrosekundy)",
+                            label: "Czas wysuwania i wsuwania (mikrosekundy)",
                             data: pomiarData.map(
                                 (pomiar) => pomiar.measuredTime
                             ),
@@ -46,73 +55,112 @@
                         },
                     ],
                 };
-                new Chart(speedCanvas, {
+                linearChart = new Chart(speedCanvas, {
                     type: "line",
                     data: chartData,
-                    options: {
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    font: {
-                                        family: "'Press Start 2P', cursive",
-                                    },
-                                },
-                            },
+                });
+            };
+            const generateBarChart = async () => {
+                const speedCanvas = document.getElementById("speedChart2");
+                console.log(barChart);
+                if (barChart !== undefined) {
+                    console.log("usuwam");
+                    barChart.destroy();
+                }
+                speedCanvas.hidden = false;
+
+                let lastMyPomiar = await fetchAllRecords(
+                    1,
+                    { date: "desc" },
+                    { driveType: await getCdDriveType() }
+                );
+
+                let myPomiarId =
+                    lastMyPomiar[0] !== undefined ? lastMyPomiar[0].id : "0";
+                console.log(myPomiarId);
+
+                let topFive = await fetchAllRecords(
+                    5,
+                    { measured_time: "desc" },
+                    { $not: { id: myPomiarId } }
+                );
+                let bottomFive = await fetchAllRecords(
+                    5,
+                    { measured_time: "asc" },
+                    { $not: { id: myPomiarId } }
+                );
+
+                let dataset = [].concat(bottomFive, lastMyPomiar, topFive);
+                dataset.sort((a, b) => b.measuredTime - a.measuredTime);
+
+                console.log(dataset);
+
+                let chartData = {
+                    labels: dataset.map((pomiar) => [
+                        new Date(pomiar.date).toLocaleString(),
+                        pomiar.driveType,
+                    ]),
+                    datasets: [
+                        {
+                            label: "Czas wysuwania i wsuwania (mikrosekundy)",
+                            data: dataset.map((pomiar) => pomiar.measuredTime),
+                            backgroundColor: dataset.map((pomiar) =>
+                                pomiar.id === myPomiarId
+                                    ? "rgba(9, 169, 26, 0.8)"
+                                    : "rgba(227, 31, 73, 1)"
+                            ),
+                            borderColor: dataset.map((pomiar) =>
+                                pomiar.id === myPomiarId
+                                    ? "rgba(9, 169, 26, 0.8)"
+                                    : "rgba(227, 31, 73, 1)"
+                            ),
                         },
-                        scales: {
-                            x: {
-                                ticks: {
-                                    font: {
-                                        size: 10,
-                                        family: "'Press Start 2P', cursive",
-                                    },
-                                },
-                            },
-                            y: {
-                                ticks: {
-                                    font: {
-                                        size: 10,
-                                        family: "'Press Start 2P', cursive",
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    ],
+                };
+                barChart = new Chart(speedCanvas, {
+                    type: "bar",
+                    data: chartData,
                 });
             };
         </script>
     </head>
-    <body class="bg-black font-ps2p relative c">
+    <body class="crt bg-black font-ps2p py-2">
         <div
             id="intro-container"
-            class="text-green-500 whitespace-nowrap overflow-hidden pt-2"
+            class="crt text-green-500 whitespace-nowrap overflow-hidden"
         >
-            <p class="w-min" id="introa">
+            <p class="w-min" id="intro">
                 Welkom to SyDAPoPEjIP-tyCZNaPomSO-BaZaP
             </p>
         </div>
-
-        <div class="px-4 flex flex-col gap-2 items-center crt">
+        <div class="crt px-4 flex flex-col gap-2">
             <button
                 onclick="onPomiar()"
-                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+                class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
             >
                 Make pomiar
             </button>
             <button
                 onclick="getAllRecords()"
-                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+                class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
             >
-                Wszystkie pomiary
+                All pomiary
             </button>
             <button
-                onclick="generateWykres()"
-                class="w-1/2 mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+                onclick="generateLinearChart()"
+                class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
             >
-                Pokaż wykres
+                Show wykres liniowy
             </button>
-            <div id="pomiary" class="text-green-500"></div>
-            <canvas id="speedChart" class="w-1/2 max-w-xl max-h-64"></canvas>
+            <button
+                onclick="generateBarChart()"
+                class="crt mt-8 border-2 px-2 py-2 border-green-500 text-green-500 hover:border-green-600 hover:text-green-600"
+            >
+                Show wykres slupkowy
+            </button>
+            <div id="pomiary" class="crt text-green-500"></div>
+            <canvas id="speedChart" class="crt w-full h-full hidden"></canvas>
+            <canvas id="speedChart2" class="crt w-full h-full hidden"></canvas>
         </div>
     </body>
 </html>

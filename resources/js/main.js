@@ -2,7 +2,10 @@ function onWindowClose() {
     Neutralino.app.exit();
 }
 
-const envs = {};
+const envs = {
+    XATA_API_KEY: "xau_R8NvUEAUsm0NfkXEoeg1Wgrap9aSg1fw0",
+    DB_URL: "https://krzysztof-mularski-s-workspace-1ou6nq.us-east-1.xata.sh/db/bazap:main/tables/measurements",
+};
 
 const setEnvVars = async () => {
     return new Promise(async (resolve, reject) => {
@@ -22,12 +25,13 @@ const setEnvVars = async () => {
     });
 };
 
-const fetchAllRecords = async () => {
+const fetchAllRecords = async (size, sort, filter) => {
     const body = {
-        sort: { id: "desc" },
         page: {
-            size: 15,
+            size: size,
         },
+        sort: sort,
+        filter: filter,
     };
     const options = {
         method: "POST",
@@ -43,11 +47,15 @@ const fetchAllRecords = async () => {
         response = await response.json();
         let arr = response.records;
 
-        arr = arr.map(({ measured_time, date }, id) => {
-            return { id: id, measuredTime: measured_time, date: date };
+        arr = arr.map(({ id, measured_time, date, driveType }) => {
+            return {
+                id: id,
+                measuredTime: measured_time,
+                date: date,
+                driveType: driveType,
+            };
         });
-        console.log(arr);
-        return arr;
+        return arr.reverse();
     } catch (err) {
         console.log(err);
     }
@@ -59,6 +67,9 @@ const getAllRecords = async () => {
     const body = {
         page: {
             size: 15,
+        },
+        sort: {
+            date: "desc",
         },
     };
     const options = {
@@ -148,13 +159,21 @@ function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ogarnijWynikiPomiaru(czas) {
-    let dataPom = Date.now();
-    typDysku = await Neutralino.filesystem.readFile(
+const getCdDriveType = async () => {
+    let typDysku = await Neutralino.filesystem.readFile(
         "./pythonBenchmark/CurrentDrive.txt",
         {}
     );
     typDysku = typDysku.trim();
+
+    return typDysku;
+    // return "TSSTcorp CDDVDW SH-216DB";
+    // return "nie ma takiego";
+};
+
+async function ogarnijWynikiPomiaru(czas) {
+    let dataPom = Date.now();
+    let typDysku = await getCdDriveType();
     let toSave = `${czas};${seriaId};${dataPom};${typDysku}\n`;
     await Neutralino.filesystem.appendFile(
         "./pythonBenchmark/CDbenchmark.txt",
