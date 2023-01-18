@@ -32,7 +32,7 @@ const chartOptions = {
 };
 
 const generateLinearChart = async () => {
-    openWykres(1);
+    openWykres(0);
     const speedCanvas = document.getElementById("speedChart");
     if (linearChart !== undefined) linearChart.destroy();
     speedCanvas.hidden = false;
@@ -60,7 +60,7 @@ const generateLinearChart = async () => {
     });
 };
 const generateBarChart = async () => {
-    openWykres(2);
+    openWykres(1);
     const speedCanvas = document.getElementById("speedChart2");
     console.log(barChart);
     if (barChart !== undefined) {

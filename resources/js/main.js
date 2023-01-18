@@ -8,10 +8,9 @@ const envs = {
 };
 
 const modal = document.getElementById("modal");
-// const div0 = document.getElementById("pomiary");
-const div1 = document.getElementById("chart1");
-const div2 = document.getElementById("chart2");
-const divs = [div0, div1, div2];
+const div0 = document.getElementById("chart1");
+const div1 = document.getElementById("chart2");
+const divs = [div0, div1];
 
 const toggleModal = () => {
     modal.classList.toggle("grid");
@@ -19,9 +18,8 @@ const toggleModal = () => {
 };
 
 const openWykres = (divNumber) => {
-    // divs[0].hidden = true;
+    divs[0].hidden = true;
     divs[1].hidden = true;
-    divs[2].hidden = true;
     divs[divNumber].hidden = false;
     toggleModal();
 };
@@ -45,7 +43,6 @@ const setEnvVars = async () => {
 };
 
 const getLocalData = async () => {
-    // [ ['4213167.099747807', '1673470416923', '1673470423813', 'TSSTcorp CDDVDW SH-216DB'], ...]
     return new Promise(async (resolve, reject) => {
         try {
             const content = await Neutralino.filesystem.readFile(
@@ -63,11 +60,6 @@ const getLocalData = async () => {
                     date: parseInt(dataPom),
                     driveType: typDysku,
                 }));
-
-            //${czas};${seriaId};${dataPom};${typDysku}
-            console.log("Offline: ", arr[0]);
-            //['4213167.099747807', '1673470416923', '1673470423813', 'TSSTcorp CDDVDW SH-216DB']
-            //{id: 'rec_cf2r5cfr5pghsm9cd8vg', measuredTime: 1454879.7000000002, date: 1673900722171, driveType: 'PLDS DVD-RW DA8AESH'}
 
             resolve(arr);
         } catch (err) {
@@ -110,7 +102,6 @@ const fetchAllRecords = async (size, sort, filter) => {
                 driveType: driveType,
             };
         });
-        console.log("Online: ", arr[0]);
         return arr.reverse();
     } catch (err) {
         console.log(err);
@@ -118,40 +109,40 @@ const fetchAllRecords = async (size, sort, filter) => {
     return null;
 };
 
-const getAllRecords = async () => {
-    openWykres(0);
-    const pomiary = document.getElementById("pomiary");
-    const body = {
-        page: {
-            size: 15,
-        },
-        sort: {
-            date: "desc",
-        },
-    };
-    const options = {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${envs.XATA_API_KEY}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-    };
+// const getAllRecords = async () => {
+//     openWykres(0);
+//     const pomiary = document.getElementById("pomiary");
+//     const body = {
+//         page: {
+//             size: 15,
+//         },
+//         sort: {
+//             date: "desc",
+//         },
+//     };
+//     const options = {
+//         method: "POST",
+//         headers: {
+//             Authorization: `Bearer ${envs.XATA_API_KEY}`,
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(body),
+//     };
 
-    try {
-        let response = await fetch(`${envs.DB_URL}/query`, options);
-        response = await response.json();
-        let arr = response.records;
+//     try {
+//         let response = await fetch(`${envs.DB_URL}/query`, options);
+//         response = await response.json();
+//         let arr = response.records;
 
-        arr = arr.map(
-            ({ measured_time, date }, id) =>
-                `<p>${id}. ${measured_time} (${date})</p>`
-        );
-        pomiary.innerHTML = arr.join(" ");
-    } catch (err) {
-        console.log(err);
-    }
-};
+//         arr = arr.map(
+//             ({ measured_time, date }, id) =>
+//                 `<p>${id}. ${measured_time} (${date})</p>`
+//         );
+//         pomiary.innerHTML = arr.join(" ");
+//     } catch (err) {
+//         console.log(err);
+//     }
+// };
 
 const insertRecord = async (time, seriaId, date, driveType) => {
     time = parseFloat(time);
