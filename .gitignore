@@ -9,6 +9,7 @@ out/
 neutralinojs.log
 bin
 resources/js/neutralino.js
+resources/js/three.js
 .prettierrc
 dist
 .env-local

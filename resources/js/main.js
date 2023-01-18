@@ -7,6 +7,25 @@ const envs = {
     DB_URL: "https://krzysztof-mularski-s-workspace-1ou6nq.us-east-1.xata.sh/db/bazap:main/tables/measurements",
 };
 
+const modal = document.getElementById("modal");
+// const div0 = document.getElementById("pomiary");
+const div1 = document.getElementById("chart1");
+const div2 = document.getElementById("chart2");
+const divs = [div0, div1, div2];
+
+const toggleModal = () => {
+    modal.classList.toggle("grid");
+    modal.classList.toggle("hidden");
+};
+
+const openWykres = (divNumber) => {
+    // divs[0].hidden = true;
+    divs[1].hidden = true;
+    divs[2].hidden = true;
+    divs[divNumber].hidden = false;
+    toggleModal();
+};
+
 const setEnvVars = async () => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -25,7 +44,43 @@ const setEnvVars = async () => {
     });
 };
 
+const getLocalData = async () => {
+    // [ ['4213167.099747807', '1673470416923', '1673470423813', 'TSSTcorp CDDVDW SH-216DB'], ...]
+    return new Promise(async (resolve, reject) => {
+        try {
+            const content = await Neutralino.filesystem.readFile(
+                "./pythonBenchmark/CDbenchmark.txt"
+            );
+            const currentDrive = getCdDriveType();
+            console.log(content.split("\r\n"));
+            const arr = content
+                .split("\r\n")
+                .filter((line) => line !== "")
+                .map((line) => line.split(";"))
+                .map(([czas, seriaId, dataPom, typDysku]) => ({
+                    id: seriaId,
+                    measuredTime: parseFloat(czas),
+                    date: parseInt(dataPom),
+                    driveType: typDysku,
+                }));
+
+            //${czas};${seriaId};${dataPom};${typDysku}
+            console.log("Offline: ", arr[0]);
+            //['4213167.099747807', '1673470416923', '1673470423813', 'TSSTcorp CDDVDW SH-216DB']
+            //{id: 'rec_cf2r5cfr5pghsm9cd8vg', measuredTime: 1454879.7000000002, date: 1673900722171, driveType: 'PLDS DVD-RW DA8AESH'}
+
+            resolve(arr);
+        } catch (err) {
+            console.log(err);
+            reject();
+        }
+    });
+};
+
 const fetchAllRecords = async (size, sort, filter) => {
+    if (!navigator.onLine) {
+        return await getLocalData();
+    }
     const body = {
         page: {
             size: size,
@@ -49,12 +104,13 @@ const fetchAllRecords = async (size, sort, filter) => {
 
         arr = arr.map(({ id, measured_time, date, driveType }) => {
             return {
-                id: id,
+                id,
                 measuredTime: measured_time,
                 date: date,
                 driveType: driveType,
             };
         });
+        console.log("Online: ", arr[0]);
         return arr.reverse();
     } catch (err) {
         console.log(err);
@@ -63,6 +119,7 @@ const fetchAllRecords = async (size, sort, filter) => {
 };
 
 const getAllRecords = async () => {
+    openWykres(0);
     const pomiary = document.getElementById("pomiary");
     const body = {
         page: {
@@ -143,6 +200,7 @@ async function enterPomiarsLoop() {
     return new Promise(async (resolve, reject) => {
         try {
             seriaId = Date.now();
+            liczba_iteracji = 10;
             await onePomiar();
             // for (let i = 0; i < liczba_iteracji; i++) {
             // await onePomiar();
@@ -185,22 +243,23 @@ function onPomiar() {
     enterPomiarsLoop();
 }
 
-// Neutralino.init();
-// setEnvVars();
+Neutralino.init();
+setEnvVars();
 
 const container = document.getElementById("intro-container");
 const intro = document.getElementById("intro");
+const intro2 = document.getElementById("intro2");
 const containerWidth = container.offsetWidth;
 const width = intro.offsetWidth;
 let offset = 0;
 setInterval(() => {
-    if (width < containerWidth) {
-        if (offset < -width) {
-            offset = containerWidth;
-        }
-        intro.style = `translate: ${offset}px`;
-        offset -= 16;
+    if (offset < -(width + 96)) {
+        offset += width;
     }
+    intro.style = `translate: ${offset}px`;
+    intro2.style = `translate: ${offset}px`;
+
+    offset -= 16;
 }, 400);
 
 Neutralino.events.on("windowClose", onWindowClose);
